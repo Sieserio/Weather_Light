@@ -1,30 +1,32 @@
 <template>
-  <div class="wrapper-product">
+  <div  class="wrapper-product">
     <p class="prodText">{{showNameProd}}</p>
     <p>{{showCostProd}}</p>
-    <button @click="deleteProd">Удалить</button>
+    <button class="btn-delete" @click="deleteProd(index)">Удалить</button>
+
   </div>
+
 </template>
 
 <script>
   export default {
     props: {
-      prodName: {
-        type: String
-      },
-      prodCost: {
-        type: Number
-      },
       deleteProd:{
         type: Function
+      },
+      product:{
+        type: Object
+      },
+      index:{
+        type: Number
       }
     },
     computed: {
       showNameProd() {
-        return "Продукт :  " + this.prodName
+        return "Продукт :  " + this.product.title
       },
       showCostProd() {
-        return "Цена :  " + this.prodCost + ' рублей'
+        return "Цена :  " + this.product.cost + ' рублей'
       }
     }
   }
@@ -35,8 +37,18 @@
     background: yellowgreen;
     padding: 10px 20px;
     font-size: 16px;
+    position: relative;
   }
   .prodText{
     margin-right: 20px;
+  }
+
+  .btn-delete{
+    padding: 2px 20px;
+    background-color: #e09e9e;
+    border-radius: 5px;
+    border: 1px #d58b8b solid;
+    position: absolute;
+    right: 10px;
   }
 </style>

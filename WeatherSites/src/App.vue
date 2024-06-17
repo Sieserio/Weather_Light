@@ -21,14 +21,16 @@
     <h1 class="title-big">Покупки </h1>
     <p class="title-medium">{{ productName === '' ? 'Впишите продукт' : productNames}}</p>
     <input type="text" class="input-city" placeholder="Ведите продукт" v-model="productName">
-    <button v-if="productName !== '' " @click="getProduct(productName, productCost)" class="btn">Получить продукт</button>
+    <button v-if="productName !== '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
     <button disabled v-else-if="productName === '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
+    <div v-if="costProduct.length===0" class="emptyCost">В вашей корзине пусто</div>
     <ProductInfo
+        v-for="(elem,index) in costProduct "
+        :index="index"
         class="prodInfo"
-        v-show="prodHas === true"
-        :prodName="productName"
-        :prodCost="productCost"
+        :product="elem"
         :deleteProd="deleteProd"/>
+
   </div>
 </template>
 
@@ -46,7 +48,6 @@ export default {
       products: '',
       productName: '',
       productCost: 0,
-      prodHas: false,
       costProduct: [],
     }
   },
@@ -81,22 +82,20 @@ export default {
           .then(res => (this.info = res.data))
 
     },
-    getProduct(productName, productCost, has) {
+    getProduct(productName) {
       axios.get('http://localhost:8000/api/products/')
           .then(inf => (this.products = inf.data))
       for (let i = 0; i<this.products.length; i++) {
         if (productName == this.products[i].title) {
-          console.log(productName)
-          this.prodHas = true
-          this.productCost = this.products[i].cost
+          //this.productCost = this.products[i].cost
+          this.costProduct.push({title:productName, cost: this.products[i].cost})
           return;
         }
       }
-      console.log('не нашел')
-      this.prodHas = false
-    },
-    deleteProd() {
 
+    },
+    deleteProd(index) {
+      this.costProduct.splice(index,1)
     }
   }
 }
@@ -115,7 +114,7 @@ export default {
     text-align: center;
   }
   .wrapper-big{
-    height: 400px;
+    height: 100%;
   }
 
   .title-big{
@@ -162,6 +161,15 @@ export default {
 
   .prodInfo{
     display: flex;
-    margin-top: 20px;
+    margin-top: 10px;
+    border-radius: 10px;
+  }
+
+  .emptyCost{
+    text-align: center;
+    background: yellowgreen;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin-top: 10px;
   }
 </style>
