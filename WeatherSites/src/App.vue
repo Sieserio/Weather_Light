@@ -1,10 +1,11 @@
 <template>
-    <div className="wrapper">
-      <h1 className="title-big">Погодное приложение </h1>
-      <p className="title-medium">{{ city == '' ? 'Впишите ваш город' : cityName}}</p>
-      <input type="text" className="input-city" placeholder="Ведите город" v-model="city">
-      <button @click="getWeather()" v-if="city!= '' " className="btn">Получить погоду</button>
-      <button disabled v-else-if="city == '' " className="btn">Получить погоду</button>
+    <div class="wrapper">
+      <h1 class="title-big">Погодное приложение </h1>
+      <p class="title-medium">{{ city === '' ? 'Впишите ваш город' : cityName}}</p>
+      <input type="text" class="input-city" placeholder="Ведите город" v-model="city">
+      <button @click="getWeather()" v-if="city!== '' " class="btn">Получить погоду</button>
+      <button disabled v-else-if="city === '' " class="btn">Получить погоду</button>
+
       <p class="title-medium">{{error}}</p>
 
       <div v-if='info != null' >
@@ -15,6 +16,14 @@
       </div>
 
     </div>
+
+  <div class="wrapper">
+    <h1 class="title-big">Покупки </h1>
+    <p class="title-medium">{{ productName === '' ? 'Впишите продукт' : productNames}}</p>
+    <input type="text" class="input-city" placeholder="Ведите продукт" v-model="productName">
+    <button v-if="productName !== '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
+    <button disabled v-else-if="productName === '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
+  </div>
 </template>
 
 
@@ -26,12 +35,16 @@ export default {
       city: '',
       error: '',
       info: null,
-      products: null,
+      products: '',
+      productName: '',
     }
   },
   computed: {
     cityName() {
       return 'Узнай погоду в ' + '"' + this.city + '"'
+    },
+    productNames() {
+      return 'Ты хочешь купить ' + this.productName
     },
     showTemp() {
       return 'Температура: ' + this.info.main.temp
@@ -55,9 +68,19 @@ export default {
       this.error =''
           axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=3d9de74844d28377e81415151cbe6a66`)
           .then(res => (this.info = res.data))
+
+    },
+    getProduct(productName) {
       axios.get('http://localhost:8000/api/products/')
-          //.then(inf => (this.products = inf.data))
-      //console.log(this.products)
+          .then(inf => (this.products = inf.data))
+          //console.log(this.products[0].title)
+      for (let i = 0; i<this.products.length; i++) {
+        if (productName == this.products[i].title) {
+          console.log(productName)
+          return;
+        }
+      }
+      console.log('не нашел')
     }
   }
 }
@@ -66,9 +89,10 @@ export default {
 <style scoped>
   .wrapper{
     width: 900px;
-    height: 500px;
+    height: 300px;
     border-radius: 20px;
     padding: 20px;
+    margin-bottom: 20px;
     background: #ffffff;
     text-align: center;
   }
