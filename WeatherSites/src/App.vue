@@ -17,19 +17,27 @@
 
     </div>
 
-  <div class="wrapper">
+  <div class="wrapper wrapper-big">
     <h1 class="title-big">Покупки </h1>
     <p class="title-medium">{{ productName === '' ? 'Впишите продукт' : productNames}}</p>
     <input type="text" class="input-city" placeholder="Ведите продукт" v-model="productName">
-    <button v-if="productName !== '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
+    <button v-if="productName !== '' " @click="getProduct(productName, productCost)" class="btn">Получить продукт</button>
     <button disabled v-else-if="productName === '' " @click="getProduct(productName)" class="btn">Получить продукт</button>
+    <ProductInfo
+        class="prodInfo"
+        v-show="prodHas === true"
+        :prodName="productName"
+        :prodCost="productCost"
+        :deleteProd="deleteProd"/>
   </div>
 </template>
 
 
 <script >
 import axios from "axios";
+import ProductInfo from "@/components/ProductInfo.vue";
 export default {
+  components: {ProductInfo},
   data() {
     return {
       city: '',
@@ -37,6 +45,9 @@ export default {
       info: null,
       products: '',
       productName: '',
+      productCost: 0,
+      prodHas: false,
+      costProduct: [],
     }
   },
   computed: {
@@ -70,31 +81,41 @@ export default {
           .then(res => (this.info = res.data))
 
     },
-    getProduct(productName) {
+    getProduct(productName, productCost, has) {
       axios.get('http://localhost:8000/api/products/')
           .then(inf => (this.products = inf.data))
-          //console.log(this.products[0].title)
       for (let i = 0; i<this.products.length; i++) {
         if (productName == this.products[i].title) {
           console.log(productName)
+          this.prodHas = true
+          this.productCost = this.products[i].cost
           return;
         }
       }
       console.log('не нашел')
+      this.prodHas = false
+    },
+    deleteProd() {
+
     }
   }
 }
+
+
 </script>
 
 <style scoped>
   .wrapper{
     width: 900px;
-    height: 300px;
+    height: 200px;
     border-radius: 20px;
     padding: 20px;
     margin-bottom: 20px;
     background: #ffffff;
     text-align: center;
+  }
+  .wrapper-big{
+    height: 400px;
   }
 
   .title-big{
@@ -137,5 +158,10 @@ export default {
   }
   .btn:disabled:hover{
     transform: none;
+  }
+
+  .prodInfo{
+    display: flex;
+    margin-top: 20px;
   }
 </style>
